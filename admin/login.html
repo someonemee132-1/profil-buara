@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin — Desa Buara</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="admin-body is-entering">
+<div class="page-loader" data-page-loader>
+    <span class="page-loader-mark"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 L16 20 L24 28 L34 14 L44 34 Z"/><path d="M4 40 L44 40"/></svg></span>
+    <span class="page-loader-bar"><span></span></span>
+    <span class="page-loader-label">Memuat Desa Buara</span>
+</div>
+
+<div class="login-shell">
+    <div class="login-card">
+        <div class="brand">
+            <span class="brand-badge">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 L16 20 L24 28 L34 14 L44 34 Z"/><path d="M4 40 L44 40"/></svg>
+            </span>
+            <span class="brand-text">
+                <span class="name">Desa Buara</span>
+                <span class="eyebrow">Panel Admin</span>
+            </span>
+        </div>
+
+        <h1>Masuk ke Dashboard</h1>
+        <p class="sub">Khusus perangkat desa yang mengelola isi situs.</p>
+
+        <div class="login-error" data-login-error>Username atau kata sandi salah.</div>
+
+        <form data-login-form novalidate>
+            <div class="field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" autocomplete="username" required>
+            </div>
+            <div class="field">
+                <label for="password">Kata Sandi</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="btn btn-gold" style="width:100%; justify-content:center;">Masuk</button>
+        </form>
+
+        <p class="login-hint">
+            Demo: username <strong>admin</strong>, kata sandi <strong>buara2026</strong>.<br>
+            Login ini berjalan di sisi browser (tanpa server) — cukup untuk mencegah
+            pengunjung biasa iseng mengedit, bukan keamanan tingkat produksi.
+            Ganti kredensial di <code>assets/js/store.js</code> sebelum dipakai serius.
+        </p>
+    </div>
+    <a href="../beranda/index.html" class="back-to-site">&larr; Kembali ke situs</a>
+</div>
+
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/experience.js"></script>
+<script>
+    // Kalau sudah login, langsung lempar ke dashboard.
+    if (AdminAuth.isLoggedIn()) {
+        window.location.href = "dashboard.html";
+    }
+
+    const form = document.querySelector("[data-login-form]");
+    const errorBox = document.querySelector("[data-login-error]");
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = form.username.value.trim();
+        const password = form.password.value;
+
+        if (AdminAuth.login(username, password)) {
+            window.location.href = "dashboard.html";
+        } else {
+            errorBox.classList.add("is-visible");
+        }
+    });
+</script>
+</body>
+</html>

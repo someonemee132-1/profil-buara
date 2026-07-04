@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin — Desa Buara</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="admin-body is-entering">
+<div class="page-loader" data-page-loader>
+    <span class="page-loader-mark"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 L16 20 L24 28 L34 14 L44 34 Z"/><path d="M4 40 L44 40"/></svg></span>
+    <span class="page-loader-bar"><span></span></span>
+    <span class="page-loader-label">Memuat Desa Buara</span>
+</div>
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="brand">
+            <span class="brand-badge">
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 L16 20 L24 28 L34 14 L44 34 Z"/><path d="M4 40 L44 40"/></svg>
+            </span>
+            <span class="brand-text">
+                <span class="name">Desa Buara</span>
+                <span class="eyebrow">Panel Admin</span>
+            </span>
+        </div>
+
+        <button class="admin-nav-btn is-active" data-tab-btn="profil">Profil Desa</button>
+        <button class="admin-nav-btn" data-tab-btn="struktur">Struktur Organisasi</button>
+        <button class="admin-nav-btn" data-tab-btn="layanan">Layanan Publik</button>
+        <button class="admin-nav-btn" data-tab-btn="berita">Berita</button>
+        <button class="admin-nav-btn" data-tab-btn="galeri">Galeri</button>
+        <button class="admin-nav-btn" data-tab-btn="ekspor">Ekspor &amp; Reset</button>
+
+        <div class="admin-sidebar-foot">
+            <a href="../beranda/index.html" class="admin-nav-btn" style="text-decoration:none;">&larr; Lihat Situs</a>
+            <button class="admin-nav-btn" data-logout>Keluar</button>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <div class="admin-topbar">
+            <h1>Dashboard Admin</h1>
+            <a href="../beranda/index.html" class="link-more" style="color: var(--forest-800);">Lihat Situs &rarr;</a>
+        </div>
+
+        <div class="admin-content">
+
+            <!-- PROFIL -->
+            <section class="admin-panel is-active" data-panel="profil">
+                <div class="admin-panel-head">
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Profil Desa</h2><p>Statistik, sejarah, visi-misi, dan batas wilayah yang tampil di halaman Beranda &amp; Profil Desa.</p></div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Statistik Desa</h3>
+                    <p class="hint">Muncul di Beranda dan Profil Desa.</p>
+                    <div data-stat-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="stat">+ Tambah Statistik</button>
+                    </div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Visi</h3>
+                    <textarea data-visi-input rows="3" style="width:100%; border-radius:8px; border:1px solid rgba(27,67,50,.15); padding:10px 14px; font:inherit;"></textarea>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Misi</h3>
+                    <div data-misi-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="misi">+ Tambah Poin Misi</button>
+                    </div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Sejarah Singkat (Timeline)</h3>
+                    <div data-timeline-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="timeline">+ Tambah Peristiwa</button>
+                    </div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Batas Wilayah</h3>
+                    <div data-batas-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="batas">+ Tambah Batas</button>
+                    </div>
+                </div>
+
+                <div class="admin-block-actions">
+                    <button class="btn-small save" data-save="profil">Simpan Perubahan</button>
+                    <button class="btn-small reset" data-reset="profil">Kembalikan ke Default</button>
+                </div>
+            </section>
+
+            <!-- STRUKTUR -->
+            <section class="admin-panel" data-panel="struktur">
+                <div class="admin-panel-head">
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Struktur Organisasi</h2><p>Baris pertama otomatis tampil sebagai kartu pimpinan (Kepala Desa) di halaman Struktur.</p></div>
+                </div>
+                <div class="admin-block">
+                    <div data-struktur-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="struktur">+ Tambah Perangkat</button>
+                    </div>
+                </div>
+                <div class="admin-block-actions">
+                    <button class="btn-small save" data-save="struktur">Simpan Perubahan</button>
+                    <button class="btn-small reset" data-reset="struktur">Kembalikan ke Default</button>
+                </div>
+            </section>
+
+            <!-- LAYANAN -->
+            <section class="admin-panel" data-panel="layanan">
+                <div class="admin-panel-head">
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Layanan Publik</h2><p>Daftar layanan administrasi beserta syarat, waktu, dan jam pelayanan.</p></div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Daftar Layanan</h3>
+                    <div data-layanan-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="layanan">+ Tambah Layanan</button>
+                    </div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Jam Pelayanan</h3>
+                    <div data-jam-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="jam">+ Tambah Baris Jam</button>
+                    </div>
+                </div>
+
+                <div class="admin-block-actions">
+                    <button class="btn-small save" data-save="layanan">Simpan Perubahan</button>
+                    <button class="btn-small reset" data-reset="layanan">Kembalikan ke Default</button>
+                </div>
+            </section>
+
+            <!-- BERITA -->
+            <section class="admin-panel" data-panel="berita">
+                <div class="admin-panel-head">
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Berita</h2><p>Slug URL dibuat otomatis dari judul setiap kali disimpan.</p></div>
+                </div>
+                <div class="admin-block">
+                    <div data-berita-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="berita">+ Tambah Berita</button>
+                    </div>
+                </div>
+                <div class="admin-block-actions">
+                    <button class="btn-small save" data-save="berita">Simpan Perubahan</button>
+                    <button class="btn-small reset" data-reset="berita">Kembalikan ke Default</button>
+                </div>
+            </section>
+
+            <!-- GALERI -->
+            <section class="admin-panel" data-panel="galeri">
+                <div class="admin-panel-head">
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Galeri</h2><p>Thumbnail masih berupa ilustrasi gradien — foto asli bisa ditambahkan langsung di kode (lihat README).</p></div>
+                </div>
+                <div class="admin-block">
+                    <div data-galeri-rows></div>
+                    <div class="admin-block-actions">
+                        <button class="btn-small add" data-add="galeri">+ Tambah Foto</button>
+                    </div>
+                </div>
+                <div class="admin-block-actions">
+                    <button class="btn-small save" data-save="galeri">Simpan Perubahan</button>
+                    <button class="btn-small reset" data-reset="galeri">Kembalikan ke Default</button>
+                </div>
+            </section>
+
+            <!-- EKSPOR -->
+            <section class="admin-panel" data-panel="ekspor">
+                <div class="admin-panel-head">
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Ekspor &amp; Reset</h2><p>Perubahan di dashboard ini hanya tersimpan di browser kamu. Ekspor untuk membagikannya secara permanen ke semua pengunjung.</p></div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Ekspor Semua Data</h3>
+                    <p class="hint">Salin hasil JSON di bawah, lalu tempelkan ke <code>const DEFAULT_DATA = { ... }</code> di file <code>assets/js/default-data.js</code>, dan unggah ulang situs ke hosting agar perubahan berlaku untuk semua pengunjung.</p>
+                    <div class="admin-block-actions" style="margin-bottom:16px;">
+                        <button class="btn-small add" data-export-btn>Tampilkan JSON</button>
+                    </div>
+                    <pre class="export-box" data-export-box style="display:none;"></pre>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Reset Total</h3>
+                    <p class="hint">Menghapus semua perubahan yang tersimpan di browser ini dan mengembalikan seluruh situs ke data bawaan.</p>
+                    <button class="btn-small reset" data-reset-all>Kembalikan SEMUA ke Default</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<div class="admin-toast" data-toast></div>
+
+<script src="../assets/js/default-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/admin-dashboard.js"></script>
+<script src="../assets/js/experience.js"></script>
+</body>
+</html>

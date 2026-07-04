@@ -1,0 +1,334 @@
+// ---------------------------------------------------------
+// Dashboard Admin — Desa Buara
+// ---------------------------------------------------------
+
+AdminAuth.requireLogin();
+
+document.addEventListener("DOMContentLoaded", () => {
+    initTabs();
+    initLogout();
+    initExport();
+
+    initProfilPanel();
+    initStrukturPanel();
+    initLayananPanel();
+    initBeritaPanel();
+    initGaleriPanel();
+});
+
+/* ---------------- Tab navigation ---------------- */
+function initTabs() {
+    const buttons = document.querySelectorAll("[data-tab-btn]");
+    const panels = document.querySelectorAll("[data-panel]");
+
+    buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const target = btn.dataset.tabBtn;
+            buttons.forEach((b) => b.classList.toggle("is-active", b === btn));
+            panels.forEach((p) => p.classList.toggle("is-active", p.dataset.panel === target));
+        });
+    });
+}
+
+function initLogout() {
+    document.querySelector("[data-logout]")?.addEventListener("click", () => {
+        AdminAuth.logout();
+        window.location.href = "login.html";
+    });
+}
+
+function showToast(message) {
+    const toast = document.querySelector("[data-toast]");
+    toast.textContent = message;
+    toast.classList.add("is-visible");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove("is-visible"), 2600);
+}
+
+/* =========================================================
+   Generic row-editor engine
+   Renders a list of "objects" as repeatable card rows with
+   add/remove controls, and can collect the current DOM state
+   back into a plain array of objects.
+   ========================================================= */
+
+function renderRowEditor(container, items, fields) {
+    container.innerHTML = "";
+    items.forEach((item) => container.appendChild(buildRow(fields, item)));
+}
+
+function buildRow(fields, item) {
+    const row = document.createElement("div");
+    row.className = "row-editor-item";
+    row.innerHTML = `
+        <button type="button" class="row-remove" data-row-remove>Hapus</button>
+        <div class="row-fields">
+            ${fields.map((f) => fieldHTML(f, item ? item[f.key] : "")).join("")}
+        </div>`;
+    row.querySelector("[data-row-remove]").addEventListener("click", () => row.remove());
+    return row;
+}
+
+function fieldHTML(field, value) {
+    const id = "f_" + Math.random().toString(36).slice(2, 9);
+    let val = value;
+    if (field.type === "textarea-lines") val = Array.isArray(value) ? value.join("\n") : (value || "");
+    if (field.type === "textarea-paragraphs") val = Array.isArray(value) ? value.join("\n\n") : (value || "");
+
+    if (field.type === "textarea" || field.type === "textarea-lines" || field.type === "textarea-paragraphs") {
+        return `<div><label for="${id}">${field.label}</label><textarea id="${id}" data-key="${field.key}" data-type="${field.type}">${escapeHTML(val || "")}</textarea></div>`;
+    }
+    return `<div><label for="${id}">${field.label}</label><input type="text" id="${id}" data-key="${field.key}" data-type="text" value="${escapeAttr(val || "")}"></div>`;
+}
+
+function collectRowEditor(container, fields) {
+    return Array.from(container.querySelectorAll(".row-editor-item")).map((row) => {
+        const obj = {};
+        fields.forEach((f) => {
+            const el = row.querySelector(`[data-key="${f.key}"]`);
+            const raw = el ? el.value : "";
+            if (f.type === "textarea-lines") {
+                obj[f.key] = raw.split("\n").map((s) => s.trim()).filter(Boolean);
+            } else if (f.type === "textarea-paragraphs") {
+                obj[f.key] = raw.split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean);
+            } else {
+                obj[f.key] = raw.trim();
+            }
+        });
+        return obj;
+    });
+}
+
+function escapeHTML(str) {
+    return String(str).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+function escapeAttr(str) {
+    return escapeHTML(str).replace(/"/g, "&quot;");
+}
+function slugify(text) {
+    return String(text).toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+}
+
+/* =========================================================
+   PROFIL
+   ========================================================= */
+function initProfilPanel() {
+    const panel = document.querySelector('[data-panel="profil"]');
+    if (!panel) return;
+
+    const statRows = panel.querySelector("[data-stat-rows]");
+    const timelineRows = panel.querySelector("[data-timeline-rows]");
+    const misiRows = panel.querySelector("[data-misi-rows]");
+    const batasRows = panel.querySelector("[data-batas-rows]");
+    const visiInput = panel.querySelector("[data-visi-input]");
+
+    const statFields = [{ key: "label", label: "Label" }, { key: "nilai", label: "Nilai" }, { key: "satuan", label: "Satuan" }];
+    const timelineFields = [{ key: "tahun", label: "Tahun" }, { key: "peristiwa", label: "Peristiwa", type: "textarea" }];
+    const misiFields = [{ key: "value", label: "Poin Misi" }];
+    const batasFields = [{ key: "arah", label: "Arah Mata Angin" }, { key: "batas", label: "Nama Desa Berbatasan" }];
+
+    function load() {
+        const profil = Store.get("profil");
+        renderRowEditor(statRows, profil.statistik || [], statFields);
+        renderRowEditor(timelineRows, profil.sejarahTimeline || [], timelineFields);
+        renderRowEditor(misiRows, (profil.misi || []).map((v) => ({ value: v })), misiFields);
+        renderRowEditor(batasRows, profil.batasWilayah || [], batasFields);
+        visiInput.value = profil.visi || "";
+    }
+
+    panel.querySelector('[data-add="stat"]').addEventListener("click", () => statRows.appendChild(buildRow(statFields, {})));
+    panel.querySelector('[data-add="timeline"]').addEventListener("click", () => timelineRows.appendChild(buildRow(timelineFields, {})));
+    panel.querySelector('[data-add="misi"]').addEventListener("click", () => misiRows.appendChild(buildRow(misiFields, {})));
+    panel.querySelector('[data-add="batas"]').addEventListener("click", () => batasRows.appendChild(buildRow(batasFields, {})));
+
+    panel.querySelector('[data-save="profil"]').addEventListener("click", () => {
+        const data = {
+            statistik: collectRowEditor(statRows, statFields),
+            sejarahTimeline: collectRowEditor(timelineRows, timelineFields),
+            misi: collectRowEditor(misiRows, misiFields).map((r) => r.value),
+            batasWilayah: collectRowEditor(batasRows, batasFields),
+            visi: visiInput.value.trim()
+        };
+        Store.set("profil", data);
+        showToast("Profil desa tersimpan.");
+    });
+
+    panel.querySelector('[data-reset="profil"]').addEventListener("click", () => {
+        if (!confirm("Kembalikan seluruh data Profil ke bawaan? Perubahan yang belum disimpan akan hilang.")) return;
+        Store.resetSection("profil");
+        load();
+        showToast("Profil dikembalikan ke default.");
+    });
+
+    load();
+}
+
+/* =========================================================
+   STRUKTUR ORGANISASI
+   ========================================================= */
+function initStrukturPanel() {
+    const panel = document.querySelector('[data-panel="struktur"]');
+    if (!panel) return;
+
+    const rows = panel.querySelector("[data-struktur-rows]");
+    const fields = [{ key: "nama", label: "Nama Lengkap" }, { key: "jabatan", label: "Jabatan" }];
+
+    function load() { renderRowEditor(rows, Store.get("struktur") || [], fields); }
+
+    panel.querySelector('[data-add="struktur"]').addEventListener("click", () => rows.appendChild(buildRow(fields, {})));
+
+    panel.querySelector('[data-save="struktur"]').addEventListener("click", () => {
+        Store.set("struktur", collectRowEditor(rows, fields));
+        showToast("Struktur organisasi tersimpan.");
+    });
+
+    panel.querySelector('[data-reset="struktur"]').addEventListener("click", () => {
+        if (!confirm("Kembalikan Struktur Organisasi ke data bawaan?")) return;
+        Store.resetSection("struktur");
+        load();
+        showToast("Struktur dikembalikan ke default.");
+    });
+
+    load();
+}
+
+/* =========================================================
+   LAYANAN PUBLIK
+   ========================================================= */
+function initLayananPanel() {
+    const panel = document.querySelector('[data-panel="layanan"]');
+    if (!panel) return;
+
+    const listRows = panel.querySelector("[data-layanan-rows]");
+    const jamRows = panel.querySelector("[data-jam-rows]");
+
+    const listFields = [
+        { key: "nama", label: "Nama Layanan" },
+        { key: "syarat", label: "Persyaratan (satu baris = satu syarat)", type: "textarea-lines" },
+        { key: "waktu", label: "Estimasi Waktu" }
+    ];
+    const jamFields = [{ key: "hari", label: "Hari" }, { key: "jam", label: "Jam" }];
+
+    function load() {
+        const layanan = Store.get("layanan");
+        renderRowEditor(listRows, layanan.daftarLayanan || [], listFields);
+        renderRowEditor(jamRows, layanan.jamLayanan || [], jamFields);
+    }
+
+    panel.querySelector('[data-add="layanan"]').addEventListener("click", () => listRows.appendChild(buildRow(listFields, {})));
+    panel.querySelector('[data-add="jam"]').addEventListener("click", () => jamRows.appendChild(buildRow(jamFields, {})));
+
+    panel.querySelector('[data-save="layanan"]').addEventListener("click", () => {
+        Store.set("layanan", {
+            daftarLayanan: collectRowEditor(listRows, listFields),
+            jamLayanan: collectRowEditor(jamRows, jamFields)
+        });
+        showToast("Layanan publik tersimpan.");
+    });
+
+    panel.querySelector('[data-reset="layanan"]').addEventListener("click", () => {
+        if (!confirm("Kembalikan Layanan Publik ke data bawaan?")) return;
+        Store.resetSection("layanan");
+        load();
+        showToast("Layanan dikembalikan ke default.");
+    });
+
+    load();
+}
+
+/* =========================================================
+   BERITA
+   ========================================================= */
+function initBeritaPanel() {
+    const panel = document.querySelector('[data-panel="berita"]');
+    if (!panel) return;
+
+    const rows = panel.querySelector("[data-berita-rows]");
+    const fields = [
+        { key: "judul", label: "Judul Berita" },
+        { key: "tanggal", label: "Tanggal (mis. 28 Juni 2026)" },
+        { key: "kategori", label: "Kategori" },
+        { key: "ringkasan", label: "Ringkasan Singkat", type: "textarea" },
+        { key: "isi", label: "Isi Berita (pisahkan tiap paragraf dengan baris kosong)", type: "textarea-paragraphs" }
+    ];
+
+    function load() {
+        // slug disimpan tapi tidak ditampilkan sebagai field yang diedit —
+        // dibuat ulang otomatis dari judul saat disimpan.
+        renderRowEditor(rows, Store.get("berita") || [], fields);
+    }
+
+    panel.querySelector('[data-add="berita"]').addEventListener("click", () => rows.appendChild(buildRow(fields, {})));
+
+    panel.querySelector('[data-save="berita"]').addEventListener("click", () => {
+        const collected = collectRowEditor(rows, fields);
+        const withSlug = collected.map((item, i) => ({
+            ...item,
+            slug: item.judul ? slugify(item.judul) : `berita-${i + 1}`
+        }));
+        Store.set("berita", withSlug);
+        load();
+        showToast("Berita tersimpan.");
+    });
+
+    panel.querySelector('[data-reset="berita"]').addEventListener("click", () => {
+        if (!confirm("Kembalikan Berita ke data bawaan? Berita yang kamu tambahkan akan hilang.")) return;
+        Store.resetSection("berita");
+        load();
+        showToast("Berita dikembalikan ke default.");
+    });
+
+    load();
+}
+
+/* =========================================================
+   GALERI
+   ========================================================= */
+function initGaleriPanel() {
+    const panel = document.querySelector('[data-panel="galeri"]');
+    if (!panel) return;
+
+    const rows = panel.querySelector("[data-galeri-rows]");
+    const fields = [{ key: "judul", label: "Judul Foto" }, { key: "kategori", label: "Kategori" }];
+
+    function load() { renderRowEditor(rows, Store.get("galeri") || [], fields); }
+
+    panel.querySelector('[data-add="galeri"]').addEventListener("click", () => rows.appendChild(buildRow(fields, {})));
+
+    panel.querySelector('[data-save="galeri"]').addEventListener("click", () => {
+        Store.set("galeri", collectRowEditor(rows, fields));
+        showToast("Galeri tersimpan.");
+    });
+
+    panel.querySelector('[data-reset="galeri"]').addEventListener("click", () => {
+        if (!confirm("Kembalikan Galeri ke data bawaan?")) return;
+        Store.resetSection("galeri");
+        load();
+        showToast("Galeri dikembalikan ke default.");
+    });
+
+    load();
+}
+
+/* =========================================================
+   EKSPOR DATA
+   ========================================================= */
+function initExport() {
+    const btn = document.querySelector("[data-export-btn]");
+    const box = document.querySelector("[data-export-box]");
+    if (!btn || !box) return;
+
+    btn.addEventListener("click", () => {
+        box.textContent = JSON.stringify(Store.exportAll(), null, 4);
+        box.style.display = "block";
+    });
+
+    document.querySelector("[data-reset-all]")?.addEventListener("click", () => {
+        if (!confirm("Kembalikan SEMUA data (Profil, Struktur, Layanan, Berita, Galeri) ke bawaan?")) return;
+        Store.resetAll();
+        window.location.reload();
+    });
+}
