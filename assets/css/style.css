@@ -1,27 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ---------------------------------------------------------
    Desa Buara — palette terinspirasi sawah berundak & senja
+   (versi lebih hidup: hijau zamrud pekat + jingga madu senja)
 --------------------------------------------------------- */
 :root {
-    --forest-950: #101f18;
-    --forest-900: #16302399;
-    --forest-800: #1b4332;
-    --forest-700: #24573f;
-    --forest-600: #2f6d4e;
-    --sage-500: #52796f;
-    --sage-400: #7a9e8f;
-    --gold-600: #b3821f;
-    --gold-500: #c99a3d;
-    --gold-300: #e6c579;
-    --soil-700: #4a2d19;
-    --soil-500: #6b4226;
-    --rice-100: #f3efe3;
-    --rice-50: #faf8f2;
-    --ink-900: #1b2018;
+    --forest-950: #0d2a20;
+    --forest-900: #0c3826;
+    --forest-800: #145c40;
+    --forest-700: #1c7a52;
+    --forest-600: #239463;
+    --sage-500: #5fa88f;
+    --sage-400: #8bc4ad;
+    --gold-600: #c76a1f;
+    --gold-500: #f2a541;
+    --gold-300: #ffd27a;
+    --soil-700: #5c3018;
+    --soil-500: #8a4a24;
+    --rice-100: #fbf3e4;
+    --rice-50: #fffaf0;
+    --ink-900: #1c2321;
 
     --font-display: "Fraunces", ui-serif, Georgia, serif;
-    --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
     --max-w: 1280px;
@@ -47,7 +48,7 @@ img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 ul { margin: 0; padding: 0; list-style: none; }
 button { font: inherit; cursor: pointer; }
-h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 600; }
+h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 600; letter-spacing: -0.01em; }
 p { margin: 0; }
 
 :focus-visible { outline: 2px solid var(--gold-500); outline-offset: 3px; }
@@ -285,7 +286,7 @@ section.section { padding: 80px 0; }
 
 /* ---------------- Visi Misi ---------------- */
 .vm-card { background: var(--rice-50); border-radius: 18px; padding: 36px; border: 1px solid rgba(27,67,50,.1); }
-.vm-card .quote { font-family: var(--font-display); font-size: 1.4rem; color: var(--forest-800); margin-top: 16px; line-height: 1.4; }
+.vm-card .quote { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.5rem; color: var(--forest-800); margin-top: 16px; line-height: 1.45; }
 @media (min-width: 768px) { .vm-grid { grid-template-columns: repeat(2, 1fr) !important; } }
 .vm-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; color: rgba(27,32,24,.75); line-height: 1.6; }
 .vm-list li { display: flex; gap: 12px; }
@@ -541,11 +542,16 @@ section.section { padding: 80px 0; }
 .page-loader {
     position: fixed; inset: 0; z-index: 999;
     background: var(--forest-950);
+    background-image: radial-gradient(circle at 50% 35%, rgba(242,165,65,.10), transparent 55%);
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
-    opacity: 1; visibility: visible;
-    transition: opacity .4s ease, visibility 0s linear 0s;
+    opacity: 1; visibility: visible; transform: translateY(0);
+    transition: transform .65s cubic-bezier(.65,0,.35,1), opacity .5s ease, visibility 0s linear 0s;
 }
-.page-loader.is-hidden { opacity: 0; visibility: hidden; transition: opacity .4s ease, visibility 0s linear .4s; }
+.page-loader.is-hidden {
+    transform: translateY(-100%);
+    opacity: 1; visibility: hidden;
+    transition: transform .65s cubic-bezier(.65,0,.35,1), opacity .5s ease .35s, visibility 0s linear .65s;
+}
 .page-loader-mark {
     height: 56px; width: 56px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
     background: linear-gradient(135deg, var(--gold-500), var(--gold-600)); color: var(--forest-950);
@@ -592,4 +598,20 @@ section.section { padding: 80px 0; }
 [data-reveal].is-visible { opacity: 1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce) {
     [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+/* =========================================================
+   INTRO HERO — teks hero muncul bertahap begitu curtain loader terbuka
+   ========================================================= */
+[data-intro] {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+}
+[data-intro].in { opacity: 1; transform: translateY(0); }
+[data-intro="1"].in { transition-delay: .05s; }
+[data-intro="2"].in { transition-delay: .16s; }
+[data-intro="3"].in { transition-delay: .27s; }
+[data-intro="4"].in { transition-delay: .38s; }
+@media (prefers-reduced-motion: reduce) {
+    [data-intro] { opacity: 1; transform: none; transition: none; }
 }

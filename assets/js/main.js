@@ -244,7 +244,7 @@ function newsCardHTML(item) {
     return `
     <a href="../berita/detail.html?slug=${item.slug}" class="news-card">
         <div class="news-thumb">
-            <svg viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M0 90 L50 70 L100 95 L150 60 L200 85 L250 55 L300 80 L300 120 L0 120 Z" fill="#101f18"/></svg>
+            <svg viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M0 90 L50 70 L100 95 L150 60 L200 85 L250 55 L300 80 L300 120 L0 120 Z" fill="#0d2a20"/></svg>
             <span class="news-tag">${item.kategori}</span>
         </div>
         <div class="news-body">
@@ -296,7 +296,7 @@ function renderGaleri() {
     container.innerHTML = data.map((item, i) => `
         <button type="button" class="gal-item" data-gal-index="${i}">
             <svg viewBox="0 0 300 375" preserveAspectRatio="none">
-                <path d="M0 ${260 + (i % 3) * 15} L75 ${220 + (i % 4) * 10} L150 ${270 - (i % 3) * 10} L225 ${230 + (i % 2) * 20} L300 260 L300 375 L0 375 Z" fill="#101f18"/>
+                <path d="M0 ${260 + (i % 3) * 15} L75 ${220 + (i % 4) * 10} L150 ${270 - (i % 3) * 10} L225 ${230 + (i % 2) * 20} L300 260 L300 375 L0 375 Z" fill="#0d2a20"/>
             </svg>
             <div class="gal-caption">
                 <p class="eyebrow">${item.kategori}</p>

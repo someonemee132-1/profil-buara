@@ -24,6 +24,11 @@
 function hideLoader() {
     const loader = document.querySelector("[data-page-loader]");
     if (loader) loader.classList.add("is-hidden");
+    // Beri jeda singkat supaya animasi "muncul" hero terasa menyusul
+    // tirai yang baru saja terbuka, bukan berbarengan.
+    setTimeout(() => {
+        document.querySelectorAll("[data-intro]").forEach((el) => el.classList.add("in"));
+    }, 200);
 }
 function showLoader() {
     const loader = document.querySelector("[data-page-loader]");
