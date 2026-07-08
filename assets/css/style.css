@@ -74,7 +74,7 @@ p { margin: 0; }
     font-size: .72rem;
 }
 
-.text-balance { text-wrap: balance; }
+.text-balance { text-wrap: balance ; }
 
 /* ---------------- Buttons ---------------- */
 .btn {
@@ -138,7 +138,7 @@ p { margin: 0; }
 .nav-toggle.is-open .icon-close { display: block; }
 
 .nav-mobile {
-    display: none; flex-direction: column; gap: 4px; padding-bottom: 20px;
+    display: none; flex-direction: column; gap: 10px; padding-bottom: 20px;
 }
 .nav-mobile.is-open { display: flex; }
 .nav-mobile a {
