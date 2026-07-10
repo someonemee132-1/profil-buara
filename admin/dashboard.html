@@ -31,7 +31,6 @@
         <button class="admin-nav-btn" data-tab-btn="layanan">Layanan Publik</button>
         <button class="admin-nav-btn" data-tab-btn="berita">Berita</button>
         <button class="admin-nav-btn" data-tab-btn="galeri">Galeri</button>
-        <button class="admin-nav-btn" data-tab-btn="ekspor">Ekspor &amp; Reset</button>
 
         <div class="admin-sidebar-foot">
             <a href="../beranda/index.html" class="admin-nav-btn" style="text-decoration:none;">&larr; Lihat Situs</a>
@@ -173,28 +172,6 @@
                 <div class="admin-block-actions">
                     <button class="btn-small save" data-save="galeri">Simpan Perubahan</button>
                     <button class="btn-small reset" data-reset="galeri">Kembalikan ke Default</button>
-                </div>
-            </section>
-
-            <!-- EKSPOR -->
-            <section class="admin-panel" data-panel="ekspor">
-                <div class="admin-panel-head">
-                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Ekspor &amp; Reset</h2><p>Perubahan di dashboard ini hanya tersimpan di browser kamu. Ekspor untuk membagikannya secara permanen ke semua pengunjung.</p></div>
-                </div>
-
-                <div class="admin-block">
-                    <h3>Ekspor Semua Data</h3>
-                    <p class="hint">Salin hasil JSON di bawah, lalu tempelkan ke <code>const DEFAULT_DATA = { ... }</code> di file <code>assets/js/default-data.js</code>, dan unggah ulang situs ke hosting agar perubahan berlaku untuk semua pengunjung.</p>
-                    <div class="admin-block-actions" style="margin-bottom:16px;">
-                        <button class="btn-small add" data-export-btn>Tampilkan JSON</button>
-                    </div>
-                    <pre class="export-box" data-export-box style="display:none;"></pre>
-                </div>
-
-                <div class="admin-block">
-                    <h3>Reset Total</h3>
-                    <p class="hint">Menghapus semua perubahan yang tersimpan di browser ini dan mengembalikan seluruh situs ke data bawaan.</p>
-                    <button class="btn-small reset" data-reset-all>Kembalikan SEMUA ke Default</button>
                 </div>
             </section>
 
