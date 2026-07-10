@@ -63,6 +63,10 @@ autentikasi yang sesungguhnya.
 2. Di dashboard, pilih tab: **Profil Desa**, **Struktur Organisasi**,
    **Layanan Publik**, **Berita**, atau **Galeri**.
 3. Ubah, tambah (+), atau hapus baris data lewat form yang tersedia.
+   Untuk **Berita** dan **Galeri**, setiap baris juga punya field **Foto** —
+   klik file gambar di sana untuk mengunggah foto asli (otomatis dikecilkan
+   di browser sebelum disimpan). Kalau foto tidak diisi, halaman publik
+   tetap menampilkan ilustrasi gradien seperti biasa.
 4. Klik **Simpan Perubahan**. Halaman publik terkait akan langsung
    menampilkan data baru (buka tab/situs di browser yang sama).
 5. Kalau salah edit, tombol **Kembalikan ke Default** per bagian akan
@@ -77,12 +81,18 @@ Karena situs ini tidak punya server/database, semua perubahan disimpan di
   akan melihat** perubahan itu (mereka tetap melihat data bawaan).
 - Kalau kamu ganti browser, mode Incognito, atau bersihkan data situs,
   perubahan yang tersimpan akan hilang.
+- `localStorage` punya batas ukuran (umumnya sekitar 5–10MB per browser).
+  Foto otomatis dikecilkan saat diunggah supaya hemat tempat, tapi kalau
+  dashboard menampilkan pesan "penyimpanan browser penuh", hapus beberapa
+  foto lama lewat tombol **Hapus Gambar** untuk memberi ruang.
 
 **Supaya perubahan berlaku untuk semua orang:** buka tab **Ekspor & Reset**
 di dashboard → klik **Tampilkan JSON** → salin seluruh isinya → tempelkan
 sebagai isi `const DEFAULT_DATA = { ... }` di file `assets/js/default-data.js`
 → unggah ulang seluruh folder situs ke hosting. Dengan begitu data barunya
-menjadi bawaan yang sama untuk semua pengunjung.
+menjadi bawaan yang sama untuk semua pengunjung. (Catatan: kalau ada banyak
+foto, hasil JSON ekspornya akan cukup panjang karena foto disimpan sebagai
+teks base64 — tetap aman disalin, hanya saja filenya jadi besar.)
 
 Kalau ke depannya kamu butuh banyak admin dan pengunjung yang harus melihat
 data yang selalu sinkron secara real-time (tanpa proses ekspor manual di
@@ -93,10 +103,6 @@ atas), situs ini perlu di-upgrade memakai backend + database sungguhan
 
 - **Potensi Desa & hero Beranda** — masih statis di `beranda/index.html`,
   edit langsung teksnya di HTML.
-- **Foto asli** — semua thumbnail berita/galeri masih ilustrasi gradien SVG.
-  Ganti dengan `<img src="...">` di CSS/HTML terkait (`.news-thumb`,
-  `.gal-item`, `.article-thumb`), lalu taruh file foto di folder baru,
-  misalnya `assets/images/`.
 - **Peta lokasi** — ganti URL `google.com/maps?q=...` di `beranda/index.html`
   dan `kontak/index.html`.
 - **Form kontak** — hanya validasi + pesan sukses di browser (tidak mengirim

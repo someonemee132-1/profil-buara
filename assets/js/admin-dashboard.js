@@ -6,6 +6,7 @@ AdminAuth.requireLogin();
 
 document.addEventListener("DOMContentLoaded", () => {
     initTabs();
+    initMobileNav();
     initLogout();
     initExport();
 
@@ -26,8 +27,30 @@ function initTabs() {
             const target = btn.dataset.tabBtn;
             buttons.forEach((b) => b.classList.toggle("is-active", b === btn));
             panels.forEach((p) => p.classList.toggle("is-active", p.dataset.panel === target));
+            closeMobileNav();
         });
     });
+}
+
+function initMobileNav() {
+    const toggle = document.querySelector("[data-admin-mobile-toggle]");
+    const sidebar = document.querySelector("[data-admin-sidebar]");
+    if (!toggle || !sidebar) return;
+
+    toggle.addEventListener("click", () => {
+        const isOpen = sidebar.classList.toggle("is-open");
+        toggle.classList.toggle("is-open", isOpen);
+        toggle.setAttribute("aria-expanded", String(isOpen));
+    });
+}
+
+function closeMobileNav() {
+    const toggle = document.querySelector("[data-admin-mobile-toggle]");
+    const sidebar = document.querySelector("[data-admin-sidebar]");
+    if (!toggle || !sidebar) return;
+    sidebar.classList.remove("is-open");
+    toggle.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
 }
 
 function initLogout() {
@@ -43,6 +66,18 @@ function showToast(message) {
     toast.classList.add("is-visible");
     clearTimeout(showToast._t);
     showToast._t = setTimeout(() => toast.classList.remove("is-visible"), 2600);
+}
+
+/** Simpan satu bagian ke Store dan beri tahu admin kalau gagal (biasanya karena
+ *  kuota localStorage penuh — umumnya disebabkan terlalu banyak/besar foto). */
+function saveSection(section, data, successMessage) {
+    const ok = Store.set(section, data);
+    if (ok) {
+        showToast(successMessage);
+    } else {
+        showToast("Gagal menyimpan — kemungkinan penyimpanan browser penuh (terlalu banyak/besar foto).");
+    }
+    return ok;
 }
 
 /* =========================================================
@@ -66,6 +101,9 @@ function buildRow(fields, item) {
             ${fields.map((f) => fieldHTML(f, item ? item[f.key] : "")).join("")}
         </div>`;
     row.querySelector("[data-row-remove]").addEventListener("click", () => row.remove());
+
+    fields.filter((f) => f.type === "image").forEach((f) => wireImageField(row, f));
+
     return row;
 }
 
@@ -75,10 +113,91 @@ function fieldHTML(field, value) {
     if (field.type === "textarea-lines") val = Array.isArray(value) ? value.join("\n") : (value || "");
     if (field.type === "textarea-paragraphs") val = Array.isArray(value) ? value.join("\n\n") : (value || "");
 
+    if (field.type === "image") {
+        const hasImage = Boolean(value);
+        return `
+        <div>
+            <label>${field.label}</label>
+            <div class="image-field" data-image-field="${field.key}">
+                <div class="image-preview" data-image-preview>
+                    ${hasImage ? `<img src="${value}" alt="">` : `<span class="image-empty">Belum ada gambar</span>`}
+                </div>
+                <div class="image-field-actions">
+                    <input type="file" accept="image/*" data-image-input>
+                    <button type="button" class="image-clear-btn" data-image-clear style="${hasImage ? "" : "display:none;"}">Hapus Gambar</button>
+                </div>
+                <input type="hidden" data-key="${field.key}" data-type="image" value="${escapeAttr(value || "")}">
+            </div>
+        </div>`;
+    }
+
     if (field.type === "textarea" || field.type === "textarea-lines" || field.type === "textarea-paragraphs") {
         return `<div><label for="${id}">${field.label}</label><textarea id="${id}" data-key="${field.key}" data-type="${field.type}">${escapeHTML(val || "")}</textarea></div>`;
     }
     return `<div><label for="${id}">${field.label}</label><input type="text" id="${id}" data-key="${field.key}" data-type="text" value="${escapeAttr(val || "")}"></div>`;
+}
+
+/** Hubungkan input file gambar: baca file, perkecil lewat canvas, simpan sebagai data URL di input hidden. */
+function wireImageField(row, field) {
+    const wrap = row.querySelector(`[data-image-field="${field.key}"]`);
+    if (!wrap) return;
+
+    const fileInput = wrap.querySelector("[data-image-input]");
+    const hiddenInput = wrap.querySelector(`[data-key="${field.key}"]`);
+    const preview = wrap.querySelector("[data-image-preview]");
+    const clearBtn = wrap.querySelector("[data-image-clear]");
+
+    function setImage(dataUrl) {
+        hiddenInput.value = dataUrl || "";
+        preview.innerHTML = dataUrl ? `<img src="${dataUrl}" alt="">` : `<span class="image-empty">Belum ada gambar</span>`;
+        clearBtn.style.display = dataUrl ? "" : "none";
+    }
+
+    fileInput.addEventListener("change", () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            alert("File yang dipilih bukan gambar.");
+            fileInput.value = "";
+            return;
+        }
+        compressImage(file, 900, 0.72)
+            .then((dataUrl) => setImage(dataUrl))
+            .catch(() => alert("Gagal memproses gambar. Coba file lain."))
+            .finally(() => { fileInput.value = ""; });
+    });
+
+    clearBtn.addEventListener("click", () => setImage(""));
+}
+
+/** Baca file gambar, batasi dimensi terpanjang ke maxDim, lalu kompres jadi JPEG data URL. */
+function compressImage(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(reader.error);
+        reader.onload = () => {
+            const img = new Image();
+            img.onerror = reject;
+            img.onload = () => {
+                let { width, height } = img;
+                if (width > height && width > maxDim) {
+                    height = Math.round(height * (maxDim / width));
+                    width = maxDim;
+                } else if (height > maxDim) {
+                    width = Math.round(width * (maxDim / height));
+                    height = maxDim;
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL("image/jpeg", quality));
+            };
+            img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+    });
 }
 
 function collectRowEditor(container, fields) {
@@ -91,6 +210,8 @@ function collectRowEditor(container, fields) {
                 obj[f.key] = raw.split("\n").map((s) => s.trim()).filter(Boolean);
             } else if (f.type === "textarea-paragraphs") {
                 obj[f.key] = raw.split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean);
+            } else if (f.type === "image") {
+                obj[f.key] = raw || "";
             } else {
                 obj[f.key] = raw.trim();
             }
@@ -152,8 +273,7 @@ function initProfilPanel() {
             batasWilayah: collectRowEditor(batasRows, batasFields),
             visi: visiInput.value.trim()
         };
-        Store.set("profil", data);
-        showToast("Profil desa tersimpan.");
+        saveSection("profil", data, "Profil desa tersimpan.");
     });
 
     panel.querySelector('[data-reset="profil"]').addEventListener("click", () => {
@@ -181,8 +301,7 @@ function initStrukturPanel() {
     panel.querySelector('[data-add="struktur"]').addEventListener("click", () => rows.appendChild(buildRow(fields, {})));
 
     panel.querySelector('[data-save="struktur"]').addEventListener("click", () => {
-        Store.set("struktur", collectRowEditor(rows, fields));
-        showToast("Struktur organisasi tersimpan.");
+        saveSection("struktur", collectRowEditor(rows, fields), "Struktur organisasi tersimpan.");
     });
 
     panel.querySelector('[data-reset="struktur"]').addEventListener("click", () => {
@@ -222,11 +341,10 @@ function initLayananPanel() {
     panel.querySelector('[data-add="jam"]').addEventListener("click", () => jamRows.appendChild(buildRow(jamFields, {})));
 
     panel.querySelector('[data-save="layanan"]').addEventListener("click", () => {
-        Store.set("layanan", {
+        saveSection("layanan", {
             daftarLayanan: collectRowEditor(listRows, listFields),
             jamLayanan: collectRowEditor(jamRows, jamFields)
-        });
-        showToast("Layanan publik tersimpan.");
+        }, "Layanan publik tersimpan.");
     });
 
     panel.querySelector('[data-reset="layanan"]').addEventListener("click", () => {
@@ -251,6 +369,7 @@ function initBeritaPanel() {
         { key: "judul", label: "Judul Berita" },
         { key: "tanggal", label: "Tanggal (mis. 28 Juni 2026)" },
         { key: "kategori", label: "Kategori" },
+        { key: "gambar", label: "Foto Berita (opsional, otomatis dikecilkan)", type: "image" },
         { key: "ringkasan", label: "Ringkasan Singkat", type: "textarea" },
         { key: "isi", label: "Isi Berita (pisahkan tiap paragraf dengan baris kosong)", type: "textarea-paragraphs" }
     ];
@@ -269,9 +388,8 @@ function initBeritaPanel() {
             ...item,
             slug: item.judul ? slugify(item.judul) : `berita-${i + 1}`
         }));
-        Store.set("berita", withSlug);
+        saveSection("berita", withSlug, "Berita tersimpan.");
         load();
-        showToast("Berita tersimpan.");
     });
 
     panel.querySelector('[data-reset="berita"]').addEventListener("click", () => {
@@ -292,15 +410,18 @@ function initGaleriPanel() {
     if (!panel) return;
 
     const rows = panel.querySelector("[data-galeri-rows]");
-    const fields = [{ key: "judul", label: "Judul Foto" }, { key: "kategori", label: "Kategori" }];
+    const fields = [
+        { key: "judul", label: "Judul Foto" },
+        { key: "kategori", label: "Kategori" },
+        { key: "gambar", label: "Foto (opsional, otomatis dikecilkan)", type: "image" }
+    ];
 
     function load() { renderRowEditor(rows, Store.get("galeri") || [], fields); }
 
     panel.querySelector('[data-add="galeri"]').addEventListener("click", () => rows.appendChild(buildRow(fields, {})));
 
     panel.querySelector('[data-save="galeri"]').addEventListener("click", () => {
-        Store.set("galeri", collectRowEditor(rows, fields));
-        showToast("Galeri tersimpan.");
+        saveSection("galeri", collectRowEditor(rows, fields), "Galeri tersimpan.");
     });
 
     panel.querySelector('[data-reset="galeri"]').addEventListener("click", () => {

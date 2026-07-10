@@ -14,8 +14,24 @@
     <span class="page-loader-label">Memuat Desa Buara</span>
 </div>
 
+<div class="admin-mobile-header">
+    <div class="brand">
+        <span class="brand-badge">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 L16 20 L24 28 L34 14 L44 34 Z"/><path d="M4 40 L44 40"/></svg>
+        </span>
+        <span class="brand-text">
+            <span class="name">Desa Buara</span>
+            <span class="eyebrow">Panel Admin</span>
+        </span>
+    </div>
+    <button class="admin-mobile-toggle" data-admin-mobile-toggle aria-label="Buka menu admin" aria-expanded="false">
+        <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+</div>
+
 <div class="admin-shell">
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" data-admin-sidebar>
         <div class="brand">
             <span class="brand-badge">
                 <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 L16 20 L24 28 L34 14 L44 34 Z"/><path d="M4 40 L44 40"/></svg>
@@ -31,6 +47,7 @@
         <button class="admin-nav-btn" data-tab-btn="layanan">Layanan Publik</button>
         <button class="admin-nav-btn" data-tab-btn="berita">Berita</button>
         <button class="admin-nav-btn" data-tab-btn="galeri">Galeri</button>
+        <button class="admin-nav-btn" data-tab-btn="ekspor">Ekspor &amp; Reset</button>
 
         <div class="admin-sidebar-foot">
             <a href="../beranda/index.html" class="admin-nav-btn" style="text-decoration:none;">&larr; Lihat Situs</a>
@@ -144,7 +161,7 @@
             <!-- BERITA -->
             <section class="admin-panel" data-panel="berita">
                 <div class="admin-panel-head">
-                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Berita</h2><p>Slug URL dibuat otomatis dari judul setiap kali disimpan.</p></div>
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Berita</h2><p>Slug URL dibuat otomatis dari judul setiap kali disimpan. Foto bersifat opsional — kalau kosong, tetap tampil ilustrasi.</p></div>
                 </div>
                 <div class="admin-block">
                     <div data-berita-rows></div>
@@ -161,7 +178,7 @@
             <!-- GALERI -->
             <section class="admin-panel" data-panel="galeri">
                 <div class="admin-panel-head">
-                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Galeri</h2><p>Thumbnail masih berupa ilustrasi gradien — foto asli bisa ditambahkan langsung di kode (lihat README).</p></div>
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Galeri</h2><p>Unggah foto langsung di setiap baris. Kalau tidak diunggah, akan tetap tampil ilustrasi gradien sebagai fallback.</p></div>
                 </div>
                 <div class="admin-block">
                     <div data-galeri-rows></div>
@@ -172,6 +189,28 @@
                 <div class="admin-block-actions">
                     <button class="btn-small save" data-save="galeri">Simpan Perubahan</button>
                     <button class="btn-small reset" data-reset="galeri">Kembalikan ke Default</button>
+                </div>
+            </section>
+
+            <!-- EKSPOR -->
+            <section class="admin-panel" data-panel="ekspor">
+                <div class="admin-panel-head">
+                    <div><h2 style="font-size:1.3rem; color:var(--forest-800);">Ekspor &amp; Reset</h2><p>Perubahan di dashboard ini hanya tersimpan di browser kamu. Ekspor untuk membagikannya secara permanen ke semua pengunjung.</p></div>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Ekspor Semua Data</h3>
+                    <p class="hint">Salin hasil JSON di bawah, lalu tempelkan ke <code>const DEFAULT_DATA = { ... }</code> di file <code>assets/js/default-data.js</code>, dan unggah ulang situs ke hosting agar perubahan berlaku untuk semua pengunjung.</p>
+                    <div class="admin-block-actions" style="margin-bottom:16px;">
+                        <button class="btn-small add" data-export-btn>Tampilkan JSON</button>
+                    </div>
+                    <pre class="export-box" data-export-box style="display:none;"></pre>
+                </div>
+
+                <div class="admin-block">
+                    <h3>Reset Total</h3>
+                    <p class="hint">Menghapus semua perubahan yang tersimpan di browser ini dan mengembalikan seluruh situs ke data bawaan.</p>
+                    <button class="btn-small reset" data-reset-all>Kembalikan SEMUA ke Default</button>
                 </div>
             </section>
 

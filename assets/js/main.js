@@ -172,10 +172,14 @@ function initLightbox() {
     const closeBtn = lightbox.querySelector("[data-lightbox-close]");
     const titleEl = lightbox.querySelector("[data-lightbox-title]");
     const catEl = lightbox.querySelector("[data-lightbox-category]");
+    const mediaEl = lightbox.querySelector(".lightbox-media");
 
     function open(item) {
         titleEl.textContent = item.judul;
         catEl.textContent = item.kategori;
+        if (mediaEl) {
+            mediaEl.innerHTML = item.gambar ? `<img src="${item.gambar}" alt="${escapeHTMLMain(item.judul)}">` : "";
+        }
         lightbox.classList.add("is-open");
     }
     function close() {
@@ -241,10 +245,13 @@ function renderBeritaHome() {
 function newsCardHTML(item) {
     // "../berita/detail.html" berfungsi dari halaman mana pun karena semua
     // halaman berada persis satu tingkat di bawah root (lihat README).
+    const thumb = item.gambar
+        ? `<img src="${item.gambar}" alt="${escapeHTMLMain(item.judul)}">`
+        : `<svg viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M0 90 L50 70 L100 95 L150 60 L200 85 L250 55 L300 80 L300 120 L0 120 Z" fill="#0d2a20"/></svg>`;
     return `
     <a href="../berita/detail.html?slug=${item.slug}" class="news-card">
         <div class="news-thumb">
-            <svg viewBox="0 0 300 120" preserveAspectRatio="none"><path d="M0 90 L50 70 L100 95 L150 60 L200 85 L250 55 L300 80 L300 120 L0 120 Z" fill="#0d2a20"/></svg>
+            ${thumb}
             <span class="news-tag">${item.kategori}</span>
         </div>
         <div class="news-body">
@@ -270,6 +277,11 @@ function renderBeritaDetail() {
     wrap.querySelector("[data-detail-tanggal]").textContent = item.tanggal;
     document.title = item.judul + " — Desa Buara";
 
+    const thumbEl = wrap.querySelector(".article-thumb");
+    if (thumbEl) {
+        thumbEl.innerHTML = item.gambar ? `<img src="${item.gambar}" alt="${escapeHTMLMain(item.judul)}">` : "";
+    }
+
     const content = wrap.querySelector("[data-detail-content]");
     content.innerHTML = item.isi.map((p) => `<p>${p}</p>`).join("");
 
@@ -278,13 +290,17 @@ function renderBeritaDetail() {
         const others = data.filter((b) => b.slug !== item.slug).slice(0, 3);
         related.innerHTML = others.map((b) => `
             <a href="../berita/detail.html?slug=${b.slug}" class="related-card">
-                <div class="related-thumb"></div>
+                <div class="related-thumb">${b.gambar ? `<img src="${b.gambar}" alt="${escapeHTMLMain(b.judul)}">` : ""}</div>
                 <div class="body">
                     <p class="news-date">${b.tanggal}</p>
                     <h3>${b.judul}</h3>
                 </div>
             </a>`).join("");
     }
+}
+
+function escapeHTMLMain(str) {
+    return String(str || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 }
 
 /* ---------------- Galeri: render grid + lightbox ---------------- */
@@ -295,9 +311,11 @@ function renderGaleri() {
 
     container.innerHTML = data.map((item, i) => `
         <button type="button" class="gal-item" data-gal-index="${i}">
-            <svg viewBox="0 0 300 375" preserveAspectRatio="none">
+            ${item.gambar
+                ? `<img src="${item.gambar}" alt="${escapeHTMLMain(item.judul)}">`
+                : `<svg viewBox="0 0 300 375" preserveAspectRatio="none">
                 <path d="M0 ${260 + (i % 3) * 15} L75 ${220 + (i % 4) * 10} L150 ${270 - (i % 3) * 10} L225 ${230 + (i % 2) * 20} L300 260 L300 375 L0 375 Z" fill="#0d2a20"/>
-            </svg>
+            </svg>`}
             <div class="gal-caption">
                 <p class="eyebrow">${item.kategori}</p>
                 <p class="title">${item.judul}</p>
