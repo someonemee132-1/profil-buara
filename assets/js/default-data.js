@@ -10,10 +10,10 @@ const DEFAULT_DATA = {
 
     profil: {
         statistik: [
-            { label: "Jumlah Penduduk", nilai: "4.216", satuan: "jiwa" },
-            { label: "Luas Wilayah", nilai: "6,8", satuan: "km²" },
-            { label: "Dusun", nilai: "4", satuan: "dusun" },
-            { label: "RT / RW", nilai: "24 / 6", satuan: "" }
+            { label: "Jumlah Penduduk", nilai: "1790", satuan: "jiwa" },
+            { label: "Luas Wilayah", nilai: "15.9", satuan: "km²" },
+            { label: "Dusun", nilai: "3", satuan: "dusun" },
+            { label: "RT / RW", nilai: "9 / 3", satuan: "" }
         ],
         sejarahTimeline: [
             { tahun: "Abad ke-18", peristiwa: "Cikal bakal permukiman dibuka oleh sesepuh desa di tepi aliran sungai kecil yang kini menjadi batas Dusun I." },
@@ -30,32 +30,29 @@ const DEFAULT_DATA = {
             "Mendorong transparansi dan digitalisasi tata kelola desa."
         ],
         batasWilayah: [
-            { arah: "Utara", batas: "Desa Karanganyar" },
-            { arah: "Selatan", batas: "Desa Sokawera" },
-            { arah: "Timur", batas: "Desa Tlahab Kidul" },
-            { arah: "Barat", batas: "Desa Kaligondang" }
+            { arah: "Utara", batas: "Desa Limbasari" },
+            { arah: "Selatan", batas: "Desa Lumpang" },
+            { arah: "Timur", batas: "Desa Brakas" },
+            { arah: "Barat", batas: "Desa Banjarsari" }
         ]
     },
 
     // Elemen pertama otomatis ditampilkan sebagai kartu "pimpinan" (Kepala Desa).
     struktur: [
-        { nama: "H. Slamet Riyadi", jabatan: "Kepala Desa" },
-        { nama: "Wahyu Nugroho", jabatan: "Sekretaris Desa" },
-        { nama: "Siti Aminah", jabatan: "Kaur Keuangan" },
-        { nama: "Agus Santoso", jabatan: "Kaur Perencanaan" },
-        { nama: "Dwi Lestari", jabatan: "Kasi Pemerintahan" },
-        { nama: "Bambang Hartono", jabatan: "Kasi Kesejahteraan" },
-        { nama: "Rina Wijayanti", jabatan: "Kasi Pelayanan" },
-        { nama: "Yusuf Setiawan", jabatan: "Kepala Dusun I" },
-        { nama: "Fajar Nur Hidayat", jabatan: "Kepala Dusun II" },
-        { nama: "Tri Wahyuni", jabatan: "Kepala Dusun III" },
-        { nama: "Eko Prasetyo", jabatan: "Kepala Dusun IV" }
+        { nama: "Amin", jabatan: "Kepala Desa" },
+        { nama: "Sodikin", jabatan: "Sekretaris Desa" },
+        { nama: "Teguh Efendi", jabatan: "Kaur TU dan Umum" },
+        { nama: "Ma'ruf Arifin", jabatan: "Kaur Perencanaan" },
+        { nama: "Miswadi", jabatan: "Kasi Kesejahteraan" },
+        { nama: "-", jabatan: "Kepala Dusun I" },
+        { nama: "Kuswanidi", jabatan: "Kepala Dusun II" },
+        { nama: "Muniyo", jabatan: "Kepala Dusun III" },
     ],
 
     layanan: {
         daftarLayanan: [
             { nama: "Surat Pengantar KTP / KK", syarat: ["Fotokopi KK", "Fotokopi KTP lama (jika ada)", "Datang langsung ke kantor desa"], waktu: "1 hari kerja" },
-            { nama: "Surat Keterangan Domisili", syarat: ["Fotokopi KTP", "Fotokopi KK", "Surat pengantar RT/RW"], waktu: "1 hari kerja" },
+            { nama: "Surat Keterangan ", syarat: ["Fotokopi KTP", "Fotokopi KK", "Surat pengantar RT/RW"], waktu: "1 hari kerja" },
             { nama: "Surat Keterangan Usaha (SKU)", syarat: ["Fotokopi KTP", "Foto lokasi usaha", "Surat pengantar RT/RW"], waktu: "2 hari kerja" },
             { nama: "Surat Keterangan Tidak Mampu (SKTM)", syarat: ["Fotokopi KTP & KK", "Surat pengantar RT/RW", "Diketahui Kasi Kesejahteraan"], waktu: "2 hari kerja" },
             { nama: "Legalisasi Dokumen", syarat: ["Dokumen asli", "Fotokopi dokumen yang akan dilegalisasi"], waktu: "Selesai di tempat" }
