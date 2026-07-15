@@ -123,7 +123,8 @@ function fieldHTML(field, value) {
                     ${hasImage ? `<img src="${value}" alt="">` : `<span class="image-empty">Belum ada gambar</span>`}
                 </div>
                 <div class="image-field-actions">
-                    <input type="file" accept="image/*" data-image-input>
+                    <input type="file" accept="image/*,.heic,.heif" data-image-input>
+                    <span class="image-field-status" data-image-status></span>
                     <button type="button" class="image-clear-btn" data-image-clear style="${hasImage ? "" : "display:none;"}">Hapus Gambar</button>
                 </div>
                 <input type="hidden" data-key="${field.key}" data-type="image" value="${escapeAttr(value || "")}">
@@ -137,6 +138,22 @@ function fieldHTML(field, value) {
     return `<div><label for="${id}">${field.label}</label><input type="text" id="${id}" data-key="${field.key}" data-type="text" value="${escapeAttr(val || "")}"></div>`;
 }
 
+/** Cek apakah file kemungkinan HEIC/HEIF berdasarkan MIME type ATAU ekstensi nama file.
+ *  Browser non-Safari sering mengosongkan file.type untuk HEIC, jadi ekstensi
+ *  dipakai sebagai fallback. */
+function isHeicFile(file) {
+    const type = (file.type || "").toLowerCase();
+    if (type === "image/heic" || type === "image/heif") return true;
+    return /\.(heic|heif)$/i.test(file.name || "");
+}
+
+/** Cek apakah file adalah gambar yang bisa diterima: tipe image/* biasa, atau HEIC/HEIF. */
+function isAcceptableImageFile(file) {
+    const type = (file.type || "").toLowerCase();
+    if (type.startsWith("image/")) return true;
+    return isHeicFile(file);
+}
+
 /** Hubungkan input file gambar: baca file, perkecil lewat canvas, simpan sebagai data URL di input hidden. */
 function wireImageField(row, field) {
     const wrap = row.querySelector(`[data-image-field="${field.key}"]`);
@@ -146,6 +163,7 @@ function wireImageField(row, field) {
     const hiddenInput = wrap.querySelector(`[data-key="${field.key}"]`);
     const preview = wrap.querySelector("[data-image-preview]");
     const clearBtn = wrap.querySelector("[data-image-clear]");
+    const statusEl = wrap.querySelector("[data-image-status]");
 
     function setImage(dataUrl) {
         hiddenInput.value = dataUrl || "";
@@ -153,24 +171,60 @@ function wireImageField(row, field) {
         clearBtn.style.display = dataUrl ? "" : "none";
     }
 
+    function setStatus(text) {
+        if (statusEl) statusEl.textContent = text || "";
+    }
+
     fileInput.addEventListener("change", () => {
         const file = fileInput.files && fileInput.files[0];
         if (!file) return;
-        if (!file.type.startsWith("image/")) {
+
+        if (!isAcceptableImageFile(file)) {
             alert("File yang dipilih bukan gambar.");
             fileInput.value = "";
             return;
         }
-        compressImage(file, 900, 0.72)
-            .then((dataUrl) => setImage(dataUrl))
-            .catch(() => alert("Gagal memproses gambar. Coba file lain."))
+
+        // HEIC/HEIF (mis. foto langsung dari iPhone) tidak bisa dibaca oleh
+        // <canvas> di kebanyakan browser, jadi dikonversi dulu ke JPEG
+        // lewat heic2any sebelum masuk ke proses kompresi biasa.
+        const needsHeicConversion = isHeicFile(file) && !(file.type || "").toLowerCase().startsWith("image/jpeg");
+
+        const prepare = needsHeicConversion
+            ? (() => {
+                  if (typeof heic2any !== "function") {
+                      return Promise.reject(new Error("heic2any belum dimuat"));
+                  }
+                  setStatus("Mengonversi HEIC…");
+                  return heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 })
+                      .then((result) => (Array.isArray(result) ? result[0] : result));
+              })()
+            : Promise.resolve(file);
+
+        prepare
+            .then((imageSource) => {
+                setStatus("Mengompres gambar…");
+                return compressImage(imageSource, 900, 0.72);
+            })
+            .then((dataUrl) => {
+                setImage(dataUrl);
+                setStatus("");
+            })
+            .catch((err) => {
+                console.error("Gagal memproses gambar:", err);
+                const msg = needsHeicConversion
+                    ? "Gagal mengonversi foto HEIC. Coba ekspor sebagai JPEG dari iPhone/Mac dulu."
+                    : "Gagal memproses gambar. Coba file lain.";
+                alert(msg);
+                setStatus("");
+            })
             .finally(() => { fileInput.value = ""; });
     });
 
     clearBtn.addEventListener("click", () => setImage(""));
 }
 
-/** Baca file gambar, batasi dimensi terpanjang ke maxDim, lalu kompres jadi JPEG data URL. */
+/** Baca file/blob gambar, batasi dimensi terpanjang ke maxDim, lalu kompres jadi JPEG data URL. */
 function compressImage(file, maxDim, quality) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
