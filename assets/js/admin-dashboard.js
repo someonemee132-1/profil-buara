@@ -123,8 +123,7 @@ function fieldHTML(field, value) {
                     ${hasImage ? `<img src="${value}" alt="">` : `<span class="image-empty">Belum ada gambar</span>`}
                 </div>
                 <div class="image-field-actions">
-                    <input type="file" accept="image/*,.heic,.heif" data-image-input>
-                    <span class="image-field-status" data-image-status></span>
+                    <input type="file" accept="image/*" data-image-input>
                     <button type="button" class="image-clear-btn" data-image-clear style="${hasImage ? "" : "display:none;"}">Hapus Gambar</button>
                 </div>
                 <input type="hidden" data-key="${field.key}" data-type="image" value="${escapeAttr(value || "")}">
@@ -138,22 +137,6 @@ function fieldHTML(field, value) {
     return `<div><label for="${id}">${field.label}</label><input type="text" id="${id}" data-key="${field.key}" data-type="text" value="${escapeAttr(val || "")}"></div>`;
 }
 
-/** Cek apakah file kemungkinan HEIC/HEIF berdasarkan MIME type ATAU ekstensi nama file.
- *  Browser non-Safari sering mengosongkan file.type untuk HEIC, jadi ekstensi
- *  dipakai sebagai fallback. */
-function isHeicFile(file) {
-    const type = (file.type || "").toLowerCase();
-    if (type === "image/heic" || type === "image/heif") return true;
-    return /\.(heic|heif)$/i.test(file.name || "");
-}
-
-/** Cek apakah file adalah gambar yang bisa diterima: tipe image/* biasa, atau HEIC/HEIF. */
-function isAcceptableImageFile(file) {
-    const type = (file.type || "").toLowerCase();
-    if (type.startsWith("image/")) return true;
-    return isHeicFile(file);
-}
-
 /** Hubungkan input file gambar: baca file, perkecil lewat canvas, simpan sebagai data URL di input hidden. */
 function wireImageField(row, field) {
     const wrap = row.querySelector(`[data-image-field="${field.key}"]`);
@@ -163,7 +146,6 @@ function wireImageField(row, field) {
     const hiddenInput = wrap.querySelector(`[data-key="${field.key}"]`);
     const preview = wrap.querySelector("[data-image-preview]");
     const clearBtn = wrap.querySelector("[data-image-clear]");
-    const statusEl = wrap.querySelector("[data-image-status]");
 
     function setImage(dataUrl) {
         hiddenInput.value = dataUrl || "";
@@ -171,60 +153,24 @@ function wireImageField(row, field) {
         clearBtn.style.display = dataUrl ? "" : "none";
     }
 
-    function setStatus(text) {
-        if (statusEl) statusEl.textContent = text || "";
-    }
-
     fileInput.addEventListener("change", () => {
         const file = fileInput.files && fileInput.files[0];
         if (!file) return;
-
-        if (!isAcceptableImageFile(file)) {
+        if (!file.type.startsWith("image/")) {
             alert("File yang dipilih bukan gambar.");
             fileInput.value = "";
             return;
         }
-
-        // HEIC/HEIF (mis. foto langsung dari iPhone) tidak bisa dibaca oleh
-        // <canvas> di kebanyakan browser, jadi dikonversi dulu ke JPEG
-        // lewat heic2any sebelum masuk ke proses kompresi biasa.
-        const needsHeicConversion = isHeicFile(file) && !(file.type || "").toLowerCase().startsWith("image/jpeg");
-
-        const prepare = needsHeicConversion
-            ? (() => {
-                  if (typeof heic2any !== "function") {
-                      return Promise.reject(new Error("heic2any belum dimuat"));
-                  }
-                  setStatus("Mengonversi HEIC…");
-                  return heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 })
-                      .then((result) => (Array.isArray(result) ? result[0] : result));
-              })()
-            : Promise.resolve(file);
-
-        prepare
-            .then((imageSource) => {
-                setStatus("Mengompres gambar…");
-                return compressImage(imageSource, 900, 0.72);
-            })
-            .then((dataUrl) => {
-                setImage(dataUrl);
-                setStatus("");
-            })
-            .catch((err) => {
-                console.error("Gagal memproses gambar:", err);
-                const msg = needsHeicConversion
-                    ? "Gagal mengonversi foto HEIC. Coba ekspor sebagai JPEG dari iPhone/Mac dulu."
-                    : "Gagal memproses gambar. Coba file lain.";
-                alert(msg);
-                setStatus("");
-            })
+        compressImage(file, 900, 0.72)
+            .then((dataUrl) => setImage(dataUrl))
+            .catch(() => alert("Gagal memproses gambar. Coba file lain."))
             .finally(() => { fileInput.value = ""; });
     });
 
     clearBtn.addEventListener("click", () => setImage(""));
 }
 
-/** Baca file/blob gambar, batasi dimensi terpanjang ke maxDim, lalu kompres jadi JPEG data URL. */
+/** Baca file gambar, batasi dimensi terpanjang ke maxDim, lalu kompres jadi JPEG data URL. */
 function compressImage(file, maxDim, quality) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -295,36 +241,45 @@ function initProfilPanel() {
     if (!panel) return;
 
     const statRows = panel.querySelector("[data-stat-rows]");
-    const timelineRows = panel.querySelector("[data-timeline-rows]");
     const misiRows = panel.querySelector("[data-misi-rows]");
     const batasRows = panel.querySelector("[data-batas-rows]");
+    const wilayahRows = panel.querySelector("[data-wilayah-rows]");
+    const kependudukanRows = panel.querySelector("[data-kependudukan-rows]");
     const visiInput = panel.querySelector("[data-visi-input]");
 
     const statFields = [{ key: "label", label: "Label" }, { key: "nilai", label: "Nilai" }, { key: "satuan", label: "Satuan" }];
-    const timelineFields = [{ key: "tahun", label: "Tahun" }, { key: "peristiwa", label: "Peristiwa", type: "textarea" }];
     const misiFields = [{ key: "value", label: "Poin Misi" }];
     const batasFields = [{ key: "arah", label: "Arah Mata Angin" }, { key: "batas", label: "Nama Desa Berbatasan" }];
+    const wilayahFields = [
+        { key: "nama", label: "Nama Dusun (mis. Dusun I)" },
+        { key: "rt", label: "Cakupan RT (mis. RT 01–08)" },
+        { key: "deskripsi", label: "Deskripsi Singkat", type: "textarea" }
+    ];
+    const kependudukanFields = [{ key: "label", label: "Label (mis. Laki-laki)" }, { key: "nilai", label: "Nilai" }];
 
     function load() {
         const profil = Store.get("profil");
         renderRowEditor(statRows, profil.statistik || [], statFields);
-        renderRowEditor(timelineRows, profil.sejarahTimeline || [], timelineFields);
         renderRowEditor(misiRows, (profil.misi || []).map((v) => ({ value: v })), misiFields);
         renderRowEditor(batasRows, profil.batasWilayah || [], batasFields);
+        renderRowEditor(wilayahRows, profil.wilayah || [], wilayahFields);
+        renderRowEditor(kependudukanRows, profil.kependudukan || [], kependudukanFields);
         visiInput.value = profil.visi || "";
     }
 
     panel.querySelector('[data-add="stat"]').addEventListener("click", () => statRows.appendChild(buildRow(statFields, {})));
-    panel.querySelector('[data-add="timeline"]').addEventListener("click", () => timelineRows.appendChild(buildRow(timelineFields, {})));
     panel.querySelector('[data-add="misi"]').addEventListener("click", () => misiRows.appendChild(buildRow(misiFields, {})));
     panel.querySelector('[data-add="batas"]').addEventListener("click", () => batasRows.appendChild(buildRow(batasFields, {})));
+    panel.querySelector('[data-add="wilayah"]').addEventListener("click", () => wilayahRows.appendChild(buildRow(wilayahFields, {})));
+    panel.querySelector('[data-add="kependudukan"]').addEventListener("click", () => kependudukanRows.appendChild(buildRow(kependudukanFields, {})));
 
     panel.querySelector('[data-save="profil"]').addEventListener("click", () => {
         const data = {
             statistik: collectRowEditor(statRows, statFields),
-            sejarahTimeline: collectRowEditor(timelineRows, timelineFields),
             misi: collectRowEditor(misiRows, misiFields).map((r) => r.value),
             batasWilayah: collectRowEditor(batasRows, batasFields),
+            wilayah: collectRowEditor(wilayahRows, wilayahFields),
+            kependudukan: collectRowEditor(kependudukanRows, kependudukanFields),
             visi: visiInput.value.trim()
         };
         saveSection("profil", data, "Profil desa tersimpan.");

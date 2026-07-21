@@ -382,6 +382,21 @@ section.section { padding: 80px 0; }
 .timeline .year { font-family: var(--font-mono); font-size: .875rem; color: var(--sage-500); }
 .timeline .event { margin-top: 6px; color: rgba(27,32,24,.75); line-height: 1.6; }
 
+/* ---------------- Pembagian Wilayah (Profil) ---------------- */
+.dusun-card {
+    background: var(--rice-50); border: 1px solid rgba(27,67,50,.1); border-radius: 18px;
+    padding: 28px; transition: transform .3s cubic-bezier(.22,.61,.36,1), border-color .2s ease, box-shadow .3s ease;
+}
+.dusun-card:hover { border-color: rgba(201,154,61,.5); box-shadow: 0 20px 40px -18px rgba(16,31,24,.28); transform: translateY(-6px); }
+.dusun-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    height: 44px; width: 44px; border-radius: 12px; background: var(--forest-800); color: var(--gold-300);
+    font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 18px;
+}
+.dusun-card h3 { font-size: 1.1rem; color: var(--forest-800); margin-bottom: 8px; }
+.dusun-card p { font-size: .9rem; color: rgba(27,32,24,.65); line-height: 1.6; }
+.dusun-meta { margin-top: 12px !important; font-family: var(--font-mono); font-size: .75rem !important; color: var(--sage-500) !important; }
+
 /* ---------------- Visi Misi ---------------- */
 .vm-card { background: var(--rice-50); border-radius: 18px; padding: 36px; border: 1px solid rgba(27,67,50,.1); }
 .vm-card .quote { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: 1.5rem; color: var(--forest-800); margin-top: 16px; line-height: 1.45; }

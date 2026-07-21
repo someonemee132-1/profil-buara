@@ -34,6 +34,17 @@ const DEFAULT_DATA = {
             { arah: "Selatan", batas: "Desa Lumpang" },
             { arah: "Timur", batas: "Desa Brakas" },
             { arah: "Barat", batas: "Desa Banjarsari" }
+        ],
+        wilayah: [
+            { nama: "Dusun I", rt: "RT 01–03", deskripsi: "Sentra utama persawahan padi warga, berbatasan langsung dengan aliran sungai desa." },
+            { nama: "Dusun II", rt: "RT 04–06", deskripsi: "Pusat kegiatan UMKM warga, mulai dari warung kelontong hingga produk olahan rumahan." },
+            { nama: "Dusun III", rt: "RT 07–09", deskripsi: "Kawasan perkebunan kelapa yang menjadi basis produksi olahan nira khas desa." }
+        ],
+        kependudukan: [
+            { label: "Laki-laki", nilai: "905" },
+            { label: "Perempuan", nilai: "885" },
+            { label: "Usia Produktif (15–64 th)", nilai: "1.180" },
+            { label: "Lansia (65+ th)", nilai: "145" }
         ]
     },
 
@@ -46,7 +57,7 @@ const DEFAULT_DATA = {
         { nama: "Miswadi", jabatan: "Kasi Kesejahteraan" },
         { nama: "-", jabatan: "Kepala Dusun I" },
         { nama: "Kuswanidi", jabatan: "Kepala Dusun II" },
-        { nama: "Muniyo", jabatan: "Kepala Dusun III" },
+        { nama: "Muniyo", jabatan: "Kepala Dusun III" }
     ],
 
     layanan: {
@@ -73,7 +84,7 @@ const DEFAULT_DATA = {
             ringkasan: "Perangkat desa bersama BPD dan tokoh masyarakat menyusun prioritas pembangunan untuk tahun anggaran mendatang.",
             isi: [
                 "Pemerintah Desa Buara menggelar Musyawarah Desa (Musdes) di balai desa untuk membahas Rencana Kerja Pemerintah Desa (RKP) tahun 2027. Musyawarah dihadiri oleh perangkat desa, Badan Permusyawaratan Desa (BPD), tokoh masyarakat, dan perwakilan setiap dusun.",
-                "Dalam forum tersebut, warga menyampaikan usulan prioritas pembangunan, di antaranya perbaikan saluran irigasi, pelebaran jalan produksi tani, dan penambahan penerangan jalan umum di Dusun III dan IV. Kepala Desa menyampaikan bahwa seluruh usulan akan diverifikasi tim perencana sebelum ditetapkan dalam dokumen RKP definitif.",
+                "Dalam forum tersebut, warga menyampaikan usulan prioritas pembangunan, di antaranya perbaikan saluran irigasi, pelebaran jalan produksi tani, dan penambahan penerangan jalan umum di Dusun III. Kepala Desa menyampaikan bahwa seluruh usulan akan diverifikasi tim perencana sebelum ditetapkan dalam dokumen RKP definitif.",
                 "Musyawarah ditutup dengan kesepakatan untuk melanjutkan pembahasan teknis anggaran pada pekan berikutnya."
             ]
         },
@@ -96,18 +107,18 @@ const DEFAULT_DATA = {
             kategori: "UMKM",
             ringkasan: "Pelatihan menghadirkan pengrajin dari Kecamatan Karanganyar untuk meningkatkan kualitas dan desain produk anyaman.",
             isi: [
-                "Sebanyak 30 anggota PKK dari empat dusun mengikuti pelatihan anyaman bambu yang diselenggarakan di balai desa. Pelatihan menghadirkan pengrajin berpengalaman dari Kecamatan Karanganyar untuk berbagi teknik anyaman serta strategi pemasaran produk.",
+                "Sebanyak 30 anggota PKK dari tiga dusun mengikuti pelatihan anyaman bambu yang diselenggarakan di balai desa. Pelatihan menghadirkan pengrajin berpengalaman dari Kecamatan Karanganyar untuk berbagi teknik anyaman serta strategi pemasaran produk.",
                 "Produk yang dihasilkan berupa tampah, besek, dan tas anyaman yang rencananya akan dipasarkan melalui BUMDes dan platform daring. Ketua PKK Desa Buara berharap pelatihan ini menjadi langkah awal membentuk sentra kerajinan yang mampu menambah penghasilan keluarga."
             ]
         },
         {
             slug: "posyandu-balita-rutin-juni",
-            judul: "Kegiatan Posyandu Balita Rutin Digelar Serentak di 4 Dusun",
+            judul: "Kegiatan Posyandu Balita Rutin Digelar Serentak di 3 Dusun",
             tanggal: "20 Mei 2026",
             kategori: "Kesehatan",
             ringkasan: "Penimbangan, imunisasi, dan pemberian makanan tambahan berlangsung lancar dengan tingkat kehadiran tinggi.",
             isi: [
-                "Kegiatan Posyandu balita bulan ini berlangsung serentak di empat dusun dengan agenda penimbangan berat badan, pengukuran tinggi badan, imunisasi, serta pemberian makanan tambahan bergizi. Kader kesehatan desa turut memberikan edukasi singkat mengenai pencegahan stunting kepada para orang tua.",
+                "Kegiatan Posyandu balita bulan ini berlangsung serentak di tiga dusun dengan agenda penimbangan berat badan, pengukuran tinggi badan, imunisasi, serta pemberian makanan tambahan bergizi. Kader kesehatan desa turut memberikan edukasi singkat mengenai pencegahan stunting kepada para orang tua.",
                 "Bidan desa melaporkan tingkat kehadiran balita mencapai lebih dari 90 persen dari total sasaran, dan sebagian besar balita tercatat memiliki status gizi baik."
             ]
         },

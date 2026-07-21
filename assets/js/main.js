@@ -19,6 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
     renderVisiMisi();
     renderBatasWilayah();
     renderMiniStats();
+    renderWilayah();
+    renderKependudukan();
 
     renderStruktur();
     renderLayanan();
@@ -96,6 +98,37 @@ function renderMiniStats() {
     const statistik = Store.get("profil").statistik || [];
     container.innerHTML = statistik.map((s) => `
         <div class="cell"><p class="val">${s.nilai} <span class="unit">${s.satuan || ""}</span></p><p class="label eyebrow">${s.label}</p></div>`).join("");
+}
+
+/* ---------------- Profil: pembagian wilayah (dusun) ---------------- */
+function renderWilayah() {
+    const container = document.querySelector("[data-wilayah-grid]");
+    if (!container) return;
+    const wilayah = Store.get("profil").wilayah || [];
+    container.innerHTML = wilayah.map((w, i) => `
+        <div class="dusun-card">
+            <span class="dusun-badge">${toRoman(i + 1)}</span>
+            <h3>${w.nama}</h3>
+            <p>${w.deskripsi}</p>
+            <p class="dusun-meta">${w.rt}</p>
+        </div>`).join("");
+}
+
+function toRoman(num) {
+    const numerals = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+    return numerals[num] || String(num);
+}
+
+/* ---------------- Profil: data kependudukan ---------------- */
+function renderKependudukan() {
+    const container = document.querySelector("[data-kependudukan-grid]");
+    if (!container) return;
+    const data = Store.get("profil").kependudukan || [];
+    container.innerHTML = data.map((d) => `
+        <div class="demo-card">
+            <p class="demo-val">${d.nilai}</p>
+            <p class="demo-label">${d.label}</p>
+        </div>`).join("");
 }
 
 /* ---------------- Struktur organisasi ---------------- */
