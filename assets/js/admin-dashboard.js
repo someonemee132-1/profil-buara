@@ -252,7 +252,6 @@ function initProfilPanel() {
     const batasFields = [{ key: "arah", label: "Arah Mata Angin" }, { key: "batas", label: "Nama Desa Berbatasan" }];
     const wilayahFields = [
         { key: "nama", label: "Nama Dusun (mis. Dusun I)" },
-        { key: "rt", label: "Cakupan RT (mis. RT 01–08)" },
         { key: "deskripsi", label: "Deskripsi Singkat", type: "textarea" }
     ];
     const kependudukanFields = [{ key: "label", label: "Label (mis. Laki-laki)" }, { key: "nilai", label: "Nilai" }];
