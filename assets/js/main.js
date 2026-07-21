@@ -110,7 +110,6 @@ function renderWilayah() {
             <span class="dusun-badge">${toRoman(i + 1)}</span>
             <h3>${w.nama}</h3>
             <p>${w.deskripsi}</p>
-            <p class="dusun-meta">${w.rt}</p>
         </div>`).join("");
 }
 

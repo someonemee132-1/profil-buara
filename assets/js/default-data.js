@@ -22,12 +22,13 @@ const DEFAULT_DATA = {
             { tahun: "2015", peristiwa: "Dimulainya program Dana Desa untuk infrastruktur jalan, drainase, dan penerangan jalan umum." },
             { tahun: "Sekarang", peristiwa: "Desa terus mengembangkan potensi wisata, UMKM, dan digitalisasi pelayanan publik." }
         ],
-        visi: "Mewujudkan Desa Buara yang mandiri, agraris, dan berbudaya menuju masyarakat sejahtera.",
+        visi: "Terwujudnya Desa Buara yang Sejahtera, Berakhlak Mulia, Maju, dan Mandiri.",
         misi: [
-            "Meningkatkan kualitas infrastruktur dan pelayanan publik yang merata.",
-            "Mengoptimalkan potensi pertanian dan UMKM lokal.",
-            "Menjaga kelestarian lingkungan dan budaya gotong royong.",
-            "Mendorong transparansi dan digitalisasi tata kelola desa."
+            "Menyelenggarakan pemerintahan yang efisien, efektif, bersih, demokratis, tepat, cepat, dan bermanfaat dengan mengutamakan pelayanan kepada masyarakat.",
+            "Menyelenggarakan pembangunan sumber daya manusia yang beriman dan bertakwa kepada Allah SWT serta meningkatkan derajat kesehatan masyarakat dalam pembangunan yang berkelanjutan.",
+            "Memberdayakan kelembagaan masyarakat sebagai subjek dan mitra pembangunan desa.",
+            "Mengembangkan pemberdayaan masyarakat dalam proses pembangunan dengan mengimplementasikan paradigma masyarakat membangun.",
+            "Replikasi kegiatan Pemerintah Daerah."
         ],
         batasWilayah: [
             { arah: "Utara", batas: "Desa Limbasari" },
@@ -36,9 +37,9 @@ const DEFAULT_DATA = {
             { arah: "Barat", batas: "Desa Banjarsari" }
         ],
         wilayah: [
-            { nama: "Dusun I", rt: "RT 01–03", deskripsi: "Sentra utama persawahan padi warga, berbatasan langsung dengan aliran sungai desa." },
-            { nama: "Dusun II", rt: "RT 04–06", deskripsi: "Pusat kegiatan UMKM warga, mulai dari warung kelontong hingga produk olahan rumahan." },
-            { nama: "Dusun III", rt: "RT 07–09", deskripsi: "Kawasan perkebunan kelapa yang menjadi basis produksi olahan nira khas desa." }
+            { nama: "Dusun I",  deskripsi: "Sentra utama persawahan padi warga, berbatasan langsung dengan aliran sungai desa." },
+            { nama: "Dusun II", deskripsi: "Pusat kegiatan UMKM warga, mulai dari warung kelontong hingga produk olahan rumahan." },
+            { nama: "Dusun III", deskripsi: "Kawasan perkebunan kelapa yang menjadi basis produksi olahan nira khas desa." }
         ],
         kependudukan: [
             { label: "Laki-laki", nilai: "905" },
